@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Training artifacts (regenerate via `make train`)
+outputs/
+
+# OS
+Thumbs.db
+.DS_Store

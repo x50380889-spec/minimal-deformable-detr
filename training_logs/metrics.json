@@ -1,0 +1,48 @@
+{
+  "models": {
+    "teacher": {
+      "map50": 0.1923,
+      "ap_per_class": [
+        0.246,
+        0.1659,
+        0.1445,
+        0.2127
+      ],
+      "fps": 5.23,
+      "ms": 191.163,
+      "params": 3847498,
+      "ckpt": "outputs\\teacher.pt"
+    },
+    "student_scratch": {
+      "map50": 0.0724,
+      "ap_per_class": [
+        0.0228,
+        0.0894,
+        0.0351,
+        0.1425
+      ],
+      "fps": 12.85,
+      "ms": 77.803,
+      "params": 1369576,
+      "ckpt": "outputs\\student_scratch.pt"
+    },
+    "student_distilled": {
+      "map50": 0.0667,
+      "ap_per_class": [
+        0.02,
+        0.0344,
+        0.0823,
+        0.13
+      ],
+      "fps": 12.68,
+      "ms": 78.834,
+      "params": 1369576,
+      "ckpt": "outputs\\student_distilled.pt"
+    }
+  },
+  "summary": {
+    "speedup_x": 2.42,
+    "map_delta_pts": -12.56,
+    "param_reduction_x": 2.81
+  }
+}
