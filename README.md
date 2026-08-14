@@ -59,7 +59,7 @@
 > 提高学生容量或调低数据难度（`configs/defect.json` 中的
 > ``data.min_size / max_size``）可以显著拉近教师与学生精度。
 
-> 注：以上为 128×128 灰度、4 类合成工业缺陷数据上的结果（详见
+> 注：以上为 128×128 灰度、4 类合成工业缺陷数据（缺陷边长 16~40 像素，详见
 > `src/minimal_detr/data/defects.py`，确定性生成、可完全复现）。
 
 ---
@@ -134,7 +134,8 @@ tensorboard --logdir training_logs/tensorboard
 ```
 
 > Windows 没有 `make` 时，直接运行 `python scripts/...` 命令即可（等价）。
-> 完整 CPU 训练约 1 小时（教师 12 epochs + 蒸馏 10 epochs），GPU 只需几分钟。
+> 完整 CPU 训练约 1.5~2 小时（教师 20 epochs + 学生 15 epochs + 蒸馏 15 epochs），
+> GPU 只需几十分钟。
 
 ---
 
