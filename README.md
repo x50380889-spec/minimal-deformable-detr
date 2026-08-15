@@ -118,6 +118,9 @@ python -m pip install -e .
 # 1) 一键复现：训练教师 → 学生基线 → 蒸馏 → 评估 → TensorBoard 事件 → 出图
 make train
 
+# Windows（没有 make）用这条：
+.\train.ps1
+
 # 或者分步执行（等价）
 python scripts/train_teacher.py --config configs/defect.json
 python scripts/train_student.py --config configs/defect.json
