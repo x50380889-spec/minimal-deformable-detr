@@ -23,3 +23,6 @@ outputs/
 # OS
 Thumbs.db
 .DS_Store
+
+# 本地日志
+*.log
