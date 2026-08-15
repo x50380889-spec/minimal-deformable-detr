@@ -29,40 +29,59 @@ def plot_loss_curves(cfg: Config) -> None:
     scalars_dir = Path(cfg.scalars_dir)
     fig, axes = plt.subplots(1, 2, figsize=(13, 4.5))
 
-    def x_of(row: dict) -> float:
-        """JSONL 中 step 行用 step，epoch 行用 epoch 作为横轴。"""
-        return float(row.get("epoch", row.get("step", 0)))
-
-    def y_of(rows: list[dict], key: str) -> list[float]:
-        return [float(r[key]) if key in r else float("nan") for r in rows]
-
     teacher_rows = JsonlWriter.read(scalars_dir / "teacher.jsonl")
-    if teacher_rows:
-        ep = [x_of(r) for r in teacher_rows]
+    teacher_steps = [r for r in teacher_rows if "step" in r]
+    teacher_epochs = [r for r in teacher_rows if "epoch" in r]
+    if teacher_steps:
         ax = axes[0]
-        ax.plot(ep, y_of(teacher_rows, "train/loss"), label="total loss", lw=1.8)
-        ax.plot(ep, y_of(teacher_rows, "train/loss_class"), label="focal cls", lw=1.2)
-        ax.plot(ep, y_of(teacher_rows, "train/loss_bbox"), label="L1 box", lw=1.2)
-        ax.plot(ep, y_of(teacher_rows, "train/loss_giou"), label="GIoU", lw=1.2)
+        steps = [float(r["step"]) for r in teacher_steps]
+        ax.plot(steps, [float(r.get("train/loss", float("nan"))) for r in teacher_steps],
+                label="total loss", lw=1.8)
+        ax.plot(steps, [float(r.get("train/loss_class", float("nan"))) for r in teacher_steps],
+                label="focal cls", lw=1.2)
+        ax.plot(steps, [float(r.get("train/loss_bbox", float("nan"))) for r in teacher_steps],
+                label="L1 box", lw=1.2)
+        ax.plot(steps, [float(r.get("train/loss_giou", float("nan"))) for r in teacher_steps],
+                label="GIoU", lw=1.2)
         ax.set_title("Teacher (Minimal Deformable DETR) — train loss")
-        ax.set_xlabel("epoch")
+        ax.set_xlabel("step")
         ax.set_ylabel("loss")
         ax.legend(fontsize=8)
         ax.grid(alpha=0.3)
+        if teacher_epochs:
+            ax2 = ax.twinx()
+            ep = [float(r["epoch"]) for r in teacher_epochs]
+            ax2.plot(ep, [float(r.get("val/mAP@50", float("nan"))) for r in teacher_epochs],
+                     "o-", color="gray", lw=1.2, label="val mAP@50 (right)")
+            ax2.set_ylabel("mAP@50", color="gray")
+            ax2.tick_params(axis="y", labelcolor="gray")
 
     distill_rows = JsonlWriter.read(scalars_dir / "distill.jsonl")
-    if distill_rows:
-        ep = [x_of(r) for r in distill_rows]
+    distill_steps = [r for r in distill_rows if "step" in r]
+    distill_epochs = [r for r in distill_rows if "epoch" in r]
+    if distill_steps:
         ax = axes[1]
-        ax.plot(ep, y_of(distill_rows, "train/loss"), label="total", lw=1.8)
-        ax.plot(ep, y_of(distill_rows, "train/kd_cls"), label="KD logits (KL)", lw=1.2)
-        ax.plot(ep, y_of(distill_rows, "train/kd_box"), label="KD box (L1)", lw=1.2)
-        ax.plot(ep, y_of(distill_rows, "train/kd_feat"), label="KD feature (L2)", lw=1.2)
+        steps = [float(r["step"]) for r in distill_steps]
+        ax.plot(steps, [float(r.get("train/loss", float("nan"))) for r in distill_steps],
+                label="total", lw=1.8)
+        ax.plot(steps, [float(r.get("train/task_loss", float("nan"))) for r in distill_steps],
+                label="task loss", lw=1.2)
+        ax.plot(steps, [float(r.get("train/kd_cls", float("nan"))) for r in distill_steps],
+                label="KD logits (KL)", lw=1.2)
+        ax.plot(steps, [float(r.get("train/kd_feat", float("nan"))) for r in distill_steps],
+                label="KD feature (L2)", lw=1.2)
         ax.set_title("Distillation → MobileNetV3-Small — train loss")
-        ax.set_xlabel("epoch")
+        ax.set_xlabel("step")
         ax.set_ylabel("loss")
         ax.legend(fontsize=8)
         ax.grid(alpha=0.3)
+        if distill_epochs:
+            ax2 = ax.twinx()
+            ep = [float(r["epoch"]) for r in distill_epochs]
+            ax2.plot(ep, [float(r.get("val/mAP@50", float("nan"))) for r in distill_epochs],
+                     "o-", color="gray", lw=1.2, label="val mAP@50 (right)")
+            ax2.set_ylabel("mAP@50", color="gray")
+            ax2.tick_params(axis="y", labelcolor="gray")
 
     fig.tight_layout()
     out = Path(cfg.log_dir) / "loss_curves.png"

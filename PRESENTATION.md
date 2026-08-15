@@ -16,9 +16,9 @@
 > 第二，把教师的知识蒸馏到 MobileNetV3-Small 学生上：软标签 KL + 回归对齐
 > + 编码器特征对齐。
 >
-> 结果上，蒸馏学生在 CPU 单帧推理上比教师快约 2.4 倍、参数量缩小 2.8 倍；
+> 结果上，蒸馏学生在 CPU 单帧推理上比教师快约 2.5 倍、参数量缩小 2.8 倍；
 > 同时把「精度-速度-体积」的权衡量化出来（mAP 差距、蒸馏相对裸训练的
-> 收敛速度优势都在 metrics.json / loss_curves.png 里）。整个流程
+> 提升都在 metrics.json / loss_curves.png 里）。整个流程
 > `make train` 一条命令复现，TensorBoard 曲线和对比图都在 training_logs 里。」
 
 ## 二、5 分钟版（按 PPT 结构讲）
@@ -47,7 +47,8 @@
 ### 4. 实验结果（1min，指图讲）
 
 - `teacher_vs_student.png`：mAP / FPS / 参数量三张对比柱状图；
-- 速度 2.4 倍、mAP 差 12.6 个点、体积 2.8 倍缩小；
+- 速度 2.5 倍、mAP 差 5.3 个点、体积 2.8 倍缩小；
+- 蒸馏学生（mAP 0.101）比裸训练学生（0.072）高约 2.9 个点；
 - `loss_curves.png`：教师 loss 收敛 + 蒸馏各分量收敛；
 - `samples/detections_*.png`：真值（绿框）vs 预测（红框）可视化。
 
