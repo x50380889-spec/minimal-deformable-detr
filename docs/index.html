@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>极简 Deformable DETR + 端侧知识蒸馏 | 项目展示</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Microsoft YaHei", sans-serif;
+    background: #f6f8fa;
+    color: #24292f;
+    line-height: 1.7;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+  .hero {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 12px;
+    padding: 32px 36px;
+    margin-bottom: 28px;
+  }
+  .hero h1 { font-size: 26px; margin-bottom: 8px; }
+  .hero p { color: #57606a; font-size: 15px; }
+  .badge {
+    display: inline-block; background: #ddf4ff; color: #0969da;
+    border-radius: 999px; padding: 2px 12px; font-size: 13px;
+    font-weight: 600; margin-right: 8px;
+  }
+  .card {
+    background: #fff; border: 1px solid #d0d7de; border-radius: 12px;
+    padding: 26px 30px; margin-bottom: 24px;
+  }
+  .card h2 { font-size: 19px; margin-bottom: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0 4px; }
+  .stat { background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 10px; padding: 14px; text-align: center; }
+  .stat b { display: block; font-size: 24px; color: #0969da; }
+  .stat span { font-size: 13px; color: #57606a; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }
+  th { background: #f6f8fa; }
+  img.figure { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; margin: 10px 0; }
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 12px; }
+  .gallery figure { text-align: center; }
+  .gallery img { width: 100%; border: 1px solid #d0d7de; border-radius: 8px; }
+  .gallery figcaption { font-size: 13px; color: #57606a; margin-top: 6px; }
+  a { color: #0969da; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .note { font-size: 13px; color: #57606a; }
+  @media (max-width: 720px) {
+    .stats { grid-template-columns: 1fr; }
+    .gallery { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <h1>极简 Deformable DETR + 端侧知识蒸馏</h1>
+    <p style="margin-bottom:10px">工业质检小目标检测 · 从零实现核心算子 · 精度-速度-体积可复现权衡</p>
+    <span class="badge">从零实现算子</span>
+    <span class="badge">知识蒸馏</span>
+    <span class="badge">端侧部署视角</span>
+    <p style="margin-top:14px"><a href="https://github.com/x50380889-spec/minimal-deformable-detr">GitHub 仓库（含源码、训练脚本、Debug 手记）</a></p>
+  </div>
+
+  <div class="card">
+    <h2>核心结论</h2>
+    <p>教师（Deformable DETR，3.85M）→ 蒸馏 → 学生（MobileNetV3-Small，1.37M）：</p>
+    <div class="stats">
+      <div class="stat"><b>2.5×</b><span>推理提速（CPU FPS 4.5 → 11.3）</span></div>
+      <div class="stat"><b>2.8×</b><span>参数量压缩（3.85M → 1.37M）</span></div>
+      <div class="stat"><b>+2.9pt</b><span>蒸馏 vs 同规模裸训练（mAP 0.072 → 0.101）</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>实测指标（验证集，CPU 端到端）</h2>
+    <table>
+      <tr><th>模型</th><th>mAP@50</th><th>FPS (CPU, batch=1)</th><th>参数量</th></tr>
+      <tr><td>教师（Deformable DETR）</td><td>0.155</td><td>4.5</td><td>3.85M</td></tr>
+      <tr><td>学生·裸训练（MobileNetV3-Small）</td><td>0.072</td><td>11.3</td><td>1.37M</td></tr>
+      <tr><td>学生·蒸馏后</td><td>0.101</td><td>11.2</td><td>1.37M</td></tr>
+    </table>
+    <p class="note">合成缺陷数据（128×128 灰度，缺陷 16~40px），结果由 <code>scripts/evaluate.py</code> 实测产生，<code>make eval</code> 可复现。</p>
+  </div>
+
+  <div class="card">
+    <h2>教师 vs 蒸馏学生：精度 / 速度 / 体积对比</h2>
+    <img class="figure" src="../training_logs/teacher_vs_student.png" alt="教师 vs 蒸馏学生对比">
+  </div>
+
+  <div class="card">
+    <h2>训练 loss 曲线（含蒸馏各通道 loss）</h2>
+    <img class="figure" src="../training_logs/loss_curves.png" alt="训练与蒸馏 loss 曲线">
+  </div>
+
+  <div class="card">
+    <h2>检测效果可视化</h2>
+    <div class="gallery">
+      <figure>
+        <img src="../training_logs/samples/detections_teacher.png" alt="教师检测结果">
+        <figcaption>教师（Deformable DETR）</figcaption>
+      </figure>
+      <figure>
+        <img src="../training_logs/samples/detections_student_distilled.png" alt="蒸馏学生检测结果">
+        <figcaption>学生·蒸馏后</figcaption>
+      </figure>
+      <figure>
+        <img src="../training_logs/samples/detections_student_scratch.png" alt="裸训练学生检测结果">
+        <figcaption>学生·裸训练</figcaption>
+      </figure>
+    </div>
+    <p class="note" style="margin-top:10px">数据样例：<code>training_logs/samples/dataset.png</code></p>
+  </div>
+
+  <div class="card">
+    <h2>技术要点</h2>
+    <ul style="padding-left:20px; font-size:14px">
+      <li>从零实现多尺度可变形注意力（MSDeformAttn）：手写矩阵乘法、双线性采样、注意力投影，不依赖 mmcv / 预构建算子，单测与 PyTorch 官方实现对拍。</li>
+      <li>三通道知识蒸馏：logits KL 软标签 + box L1/GIoU 对齐 + 编码器多尺度特征 L2 对齐，并保留学生自身 GT 监督。</li>
+      <li>工程规范：Docstring + Type Hint、18 项单元测试、Makefile / PowerShell 一键复现、TensorBoard 曲线。</li>
+    </ul>
+    <p style="margin-top:12px"><a href="https://github.com/x50380889-spec/minimal-deformable-detr">查看完整 README 与源码 →</a></p>
+  </div>
+
+  <p class="note" style="text-align:center">诚实声明：合成数据噪声大、纯 CPU 训练，教师绝对精度约 16% mAP@50；本项目的价值在于从零实现算子、可复现的蒸馏流水线与量化权衡。</p>
+</div>
+</body>
+</html>
