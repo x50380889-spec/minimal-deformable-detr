@@ -26,3 +26,6 @@ Thumbs.db
 
 # 本地日志
 *.log
+
+# 面试稿（仅本地保存，不上传仓库）
+PRESENTATION.md
