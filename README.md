@@ -53,6 +53,10 @@
   （见 `training_logs/loss_curves.png`）——教师的软标签与特征对齐确实
   把知识迁移给了小模型。
 
+![教师 vs 蒸馏学生：mAP / FPS / 参数量对比](training_logs/teacher_vs_student.png)
+
+![训练 loss 曲线与蒸馏 loss 曲线](training_logs/loss_curves.png)
+
 > 坦白说明：合成数据噪声大、教师本身只有约 16% 的
 > mAP@50，因此蒸馏后的绝对精度不高；本仓库的重点是**从零实现算子 +
 > 完整可复现的蒸馏流水线 + 诚实的权衡量化**。用 GPU 训练更多 epoch、
